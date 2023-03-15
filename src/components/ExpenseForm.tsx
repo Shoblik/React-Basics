@@ -1,9 +1,6 @@
-import React, { FormEvent, useState } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExpenseTable } from "./ExpenseTable";
-import { ExpenseFilter } from "./ExpenseFilter";
 import { categories } from "./categories";
 
 const schema = z.object({
