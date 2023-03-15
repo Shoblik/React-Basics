@@ -1,54 +1,38 @@
-import { useState } from "react";
-import { FieldValues } from "react-hook-form";
-import { ExpenseForm } from './components/ExpenseForm';
-import { ExpenseTable } from "./components/ExpenseTable";
-import { ExpenseFilter } from "./components/ExpenseFilter";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
+interface User {
+	id: number;
+	name: string;
+}
 
-function App() {
-	const [items, setItems] = useState({
-		expenses: Array(),
-		category: "All",
-	});
+export const App = () => {
+	const [users, setUsers] = useState<User[]>([]);
+	const [error, setError] = useState("");
 
-	const handleSubmit = (data: FieldValues) => {
-		setItems({
-			...items,
-			expenses: [...items.expenses, data],
-		});
-	};
-
-	const handleDeleteItem = (flaggedIndex: number) => {
-		setItems({
-			...items,
-			expenses: items.expenses.filter((item, index) => index !== flaggedIndex),
-		});
-	};
-
-	const handleCategoryUpdate = (newCategory: string) => {
-		setItems({
-			category: newCategory,
-			expenses: [...items.expenses],
-		});
-	};
-
-	const expensesByCategory = () => {
-		if (items.category === "All") return items.expenses;
-		return items.expenses.filter((item) => {
-			if (item.category === items.category) return item;
-		});
-	};
+	useEffect(() => {
+		axios
+			.get("https://jsonplaceholder.typicode.com/users")
+			.then((res) => {
+				setUsers(res.data);
+				setError('')
+			})
+			.catch((error) => {
+				setError(error.message);
+			});
+	}, []);
 
 	return (
-		<div>
-			<ExpenseForm onSubmit={handleSubmit} />
-			<ExpenseFilter onSelectCategory={handleCategoryUpdate} />
-			<ExpenseTable
-				onDelete={handleDeleteItem}
-				expenses={expensesByCategory()}
-			/>
-		</div>
+		<>
+			{error && <p className='text-danger'>{error}</p>}
+
+			<ul>
+				{users.map((user, index) => (
+					<li key={index}>{user.name}</li>
+				))}
+			</ul>
+		</>
 	);
-}
+};
 
 export default App;
