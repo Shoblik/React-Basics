@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { CanceledError } from './services/api-client';
 import userService, { User } from './services/user-service';
@@ -9,7 +10,7 @@ export const App = () => {
 
 	useEffect(() => {
 		setLoading(true);
-		const { request, cancel } = userService.getAllUsers();
+		const { request, cancel } = userService.getAll<User>();
 		request
 			.then((res) => {
 				setUsers(res.data);
@@ -30,7 +31,7 @@ export const App = () => {
 
 		setUsers(users.filter((currentUser) => currentUser.id != user.id));
 
-		const { request } = userService.deleteUser(user.id);
+		const { request } = userService.delete(user.id);
 
 		request.catch((error) => {
 			setError(error.message);
@@ -48,7 +49,7 @@ export const App = () => {
 		setUsers([newUser, ...users]);
 
 		userService
-			.addUser(newUser)
+			.create(newUser)
 			.then(({ data: savedUser }) => setUsers([savedUser, ...users]))
 			.catch((err) => {
 				setError(err.message);
@@ -66,7 +67,7 @@ export const App = () => {
 			)
 		);
 
-		userService.updateUser(updatedUser).catch((err) => {
+		userService.update(updatedUser).catch((err) => {
 			setError(err.message);
 		});
 	};
